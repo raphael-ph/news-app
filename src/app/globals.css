@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Styles */
+body {
+  background-color: #fff; 
+  font-family: Arial, sans-serif; 
+}
+
+/* Example Custom Styles */
+:root {
+  --primary-color: #003B5C; 
+  --secondary-color: #E1E3E4; 
+  --accent-color: #C8102E; 
+}
+/* Applying brand colors */
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.text-primary {
+  color: var(--primary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-color);
+}
+
+.text-accent {
+  color: var(--accent-color);
+}
+

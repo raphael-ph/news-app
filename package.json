@@ -1,0 +1,33 @@
+{
+  "name": "news-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "ngrok": "ngrok http 3000"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.620.1",
+    "@aws-sdk/lib-dynamodb": "^3.620.1",
+    "@heroicons/react": "^2.1.5",
+    "autoprefixer": "^10.4.19",
+    "jspdf": "^2.5.1",
+    "next": "14.2.5",
+    "react": "^18",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-beautiful-dnd": "^13.1.8",
+    "@types/react-dom": "^18",
+    "ngrok": "^5.0.0-beta.2",
+    "postcss": "^8.4.40",
+    "tailwindcss": "^3.4.7",
+    "typescript": "^5"
+  }
+}
