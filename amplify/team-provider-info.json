@@ -1,15 +1,15 @@
 {
-  "dev": {
+  "master": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-newsapp-dev-c8161-authRole",
-      "UnauthRoleArn": "arn:aws:iam::730335602330:role/amplify-newsapp-dev-c8161-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::730335602330:role/amplify-newsapp-dev-c8161-authRole",
+      "AuthRoleName": "amplify-newsapp-master-b8641-authRole",
+      "UnauthRoleArn": "arn:aws:iam::730335602330:role/amplify-newsapp-master-b8641-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::730335602330:role/amplify-newsapp-master-b8641-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-newsapp-dev-c8161-deployment",
-      "UnauthRoleName": "amplify-newsapp-dev-c8161-unauthRole",
-      "StackName": "amplify-newsapp-dev-c8161",
-      "StackId": "arn:aws:cloudformation:us-east-1:730335602330:stack/amplify-newsapp-dev-c8161/0088cc10-5504-11ef-a2be-0eee2ed58ac3",
-      "AmplifyAppId": "d1uevcehjhiy00"
+      "DeploymentBucketName": "amplify-newsapp-master-b8641-deployment",
+      "UnauthRoleName": "amplify-newsapp-master-b8641-unauthRole",
+      "StackName": "amplify-newsapp-master-b8641",
+      "StackId": "arn:aws:cloudformation:us-east-1:730335602330:stack/amplify-newsapp-master-b8641/5eb74ad0-5506-11ef-917a-0afff46d9631",
+      "AmplifyAppId": "dpdjd9axxmxxs"
     }
   }
 }
