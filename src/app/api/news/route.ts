@@ -2,12 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
 
+const accessKeyId = process.env.ACCESS_KEY_ID;
+const secretAccessKey = process.env.SECRET_ACCESS_KEY;
+const sessionToken = process.env.SESSION_TOKEN;
+
+if (!accessKeyId || !secretAccessKey || !sessionToken) {
+  throw new Error('AWS credentials are not set properly in environment variables.');
+}
+
 const client = new DynamoDBClient({
   region: 'us-east-1',
   credentials: {
-    accessKeyId: process.env.ACCESS_KEY_ID!,   // Use environment variables for security
-    secretAccessKey: process.env.SECRET_ACCESS_KEY!, // Use environment variables for security
-    sessionToken: process.env.SESSION_TOKEN // Use environment variables for security
+    accessKeyId,
+    secretAccessKey,
+    sessionToken,
   },
 });
 
@@ -19,15 +27,7 @@ export async function GET(req: NextRequest) {
   const sentiment = searchParams.get('sentiment') || '';
   const startDate = searchParams.get('startDate') || '';
   const endDate = searchParams.get('endDate') || '';
-  const limit = parseInt(searchParams.get('limit') || '10', 10); // Default to 10
-
-  console.log('Received request with query parameters:', {
-    relevance,
-    sentiment,
-    startDate,
-    endDate,
-    limit
-  });
+  const limit = parseInt(searchParams.get('limit') || '10', 10);
 
   try {
     const params: any = {
@@ -68,13 +68,10 @@ export async function GET(req: NextRequest) {
       params.ExpressionAttributeValues = expressionAttributeValues;
     }
 
-    console.log('DynamoDB query parameters:', params);
+    console.log('DynamoDB Scan params:', params);
 
     const data = await ddbDocClient.send(new ScanCommand(params));
     let items = data.Items || [];
-
-    // Log the number of items retrieved
-    console.log('Number of items retrieved from DynamoDB:', items.length);
 
     // Sort by relevance (ascending) and date_publish (descending)
     items.sort((a, b) => {
@@ -86,11 +83,17 @@ export async function GET(req: NextRequest) {
     // Apply the limit
     const limitedItems = limit > 0 ? items.slice(0, limit) : items;
 
-    console.log('Number of items after applying limit:', limitedItems.length);
+    console.log('Filtered items:', limitedItems);
 
     return NextResponse.json(limitedItems);
   } catch (error) {
-    console.error('Error fetching filtered news:', error);
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    // TypeScript requires you to assert the error type
+    if (error instanceof Error) {
+      console.error('Error fetching filtered news:', error.message);
+      return NextResponse.json({ message: 'Internal Server Error', error: error.message }, { status: 500 });
+    } else {
+      console.error('Unexpected error:', error);
+      return NextResponse.json({ message: 'Internal Server Error', error: 'Unknown error occurred' }, { status: 500 });
+    }
   }
 }
