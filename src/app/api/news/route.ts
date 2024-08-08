@@ -5,9 +5,9 @@ import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
 const client = new DynamoDBClient({
   region: 'us-east-1',
   credentials: {
-    accessKeyId: process.env.ACCESS_KEY_ID!,
-    secretAccessKey: process.env.SECRET_ACCESS_KEY!,
-    sessionToken: process.env.SESSION_TOKEN, // Include this if you're using temporary credentials
+    accessKeyId: process.env.ACCESS_KEY_ID!,   // Use environment variables for security
+    secretAccessKey: process.env.SECRET_ACCESS_KEY!, // Use environment variables for security
+    sessionToken: process.env.SESSION_TOKEN // Use environment variables for security
   },
 });
 
@@ -20,6 +20,14 @@ export async function GET(req: NextRequest) {
   const startDate = searchParams.get('startDate') || '';
   const endDate = searchParams.get('endDate') || '';
   const limit = parseInt(searchParams.get('limit') || '10', 10); // Default to 10
+
+  console.log('Received request with query parameters:', {
+    relevance,
+    sentiment,
+    startDate,
+    endDate,
+    limit
+  });
 
   try {
     const params: any = {
@@ -60,8 +68,13 @@ export async function GET(req: NextRequest) {
       params.ExpressionAttributeValues = expressionAttributeValues;
     }
 
+    console.log('DynamoDB query parameters:', params);
+
     const data = await ddbDocClient.send(new ScanCommand(params));
     let items = data.Items || [];
+
+    // Log the number of items retrieved
+    console.log('Number of items retrieved from DynamoDB:', items.length);
 
     // Sort by relevance (ascending) and date_publish (descending)
     items.sort((a, b) => {
@@ -72,6 +85,8 @@ export async function GET(req: NextRequest) {
 
     // Apply the limit
     const limitedItems = limit > 0 ? items.slice(0, limit) : items;
+
+    console.log('Number of items after applying limit:', limitedItems.length);
 
     return NextResponse.json(limitedItems);
   } catch (error) {
