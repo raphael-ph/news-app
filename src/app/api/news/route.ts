@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
 
-const client = new DynamoDBClient({ region: 'us-east-1' });
+const client = new DynamoDBClient({
+  region: 'us-east-1',
+  credentials: {
+    accessKeyId: process.env.ACCESS_KEY_ID!,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+    sessionToken: process.env.SESSION_TOKEN, // Include this if you're using temporary credentials
+  },
+});
+
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
 export async function GET(req: NextRequest) {
