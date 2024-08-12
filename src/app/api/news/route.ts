@@ -1,21 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
-
-const accessKeyId = process.env.ACCESS_KEY_ID;
-const secretAccessKey = process.env.SECRET_ACCESS_KEY;
-const sessionToken = process.env.SESSION_TOKEN;
-
-if (!accessKeyId || !secretAccessKey || !sessionToken) {
-  throw new Error('AWS credentials are not set properly in environment variables.');
-}
+import { format, parse, startOfDay, endOfDay, isValid } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const client = new DynamoDBClient({
   region: 'us-east-1',
   credentials: {
-    accessKeyId,
-    secretAccessKey,
-    sessionToken,
+    accessKeyId: process.env.ACCESS_KEY_ID!,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+    sessionToken: process.env.SESSION_TOKEN,
   },
 });
 
@@ -28,6 +22,39 @@ export async function GET(req: NextRequest) {
   const startDate = searchParams.get('startDate') || '';
   const endDate = searchParams.get('endDate') || '';
   const limit = parseInt(searchParams.get('limit') || '10', 10);
+
+  // Function to format date to ISO format "yyyy-MM-dd'T'HH:mm:ss"
+  function formatDateToDBFormat(date: string) {
+    if (!date) return '';
+    try {
+      // Attempt to parse different possible date formats
+      const formats = [
+        'dd-MM-yyyy HH:mm:ss',
+        'dd/MM/yyyy HH:mm:ss',
+        'yyyy-MM-dd HH:mm:ss',
+        'MM/dd/yyyy HH:mm:ss',
+      ];
+
+      for (const fmt of formats) {
+        const dt = parse(date, fmt, new Date(), { locale: ptBR });
+        if (isValid(dt)) {
+          return format(dt, "yyyy-MM-dd HH:mm:ss");
+        }
+      }
+
+      console.error('Invalid date format:', date);
+      return '';
+    } catch (e) {
+      console.error('Date parsing error:', e);
+      return '';
+    }
+  }
+
+  const startDateFormatted = formatDateToDBFormat(startDate);
+  const endDateFormatted = formatDateToDBFormat(endDate);
+
+  console.log('Start Date Formatted:', startDateFormatted);
+  console.log('End Date Formatted:', endDateFormatted);
 
   try {
     const params: any = {
@@ -50,15 +77,15 @@ export async function GET(req: NextRequest) {
       expressionAttributeNames["#sentiment"] = "sentiment";
     }
 
-    if (startDate) {
+    if (startDateFormatted) {
       filterExpressions.push("#date_publish >= :startDate");
-      expressionAttributeValues[":startDate"] = startDate;
+      expressionAttributeValues[":startDate"] = format(startOfDay(new Date(startDateFormatted)), "yyyy-MM-dd' 'HH:mm:ss");
       expressionAttributeNames["#date_publish"] = "date_publish";
     }
 
-    if (endDate) {
+    if (endDateFormatted) {
       filterExpressions.push("#date_publish <= :endDate");
-      expressionAttributeValues[":endDate"] = endDate;
+      expressionAttributeValues[":endDate"] = format(endOfDay(new Date(endDateFormatted)), "yyyy-MM-dd' 'HH:mm:ss");
       expressionAttributeNames["#date_publish"] = "date_publish";
     }
 
@@ -68,26 +95,33 @@ export async function GET(req: NextRequest) {
       params.ExpressionAttributeValues = expressionAttributeValues;
     }
 
-    console.log('DynamoDB Scan params:', params);
+    console.log('Filter Expression:', params.FilterExpression);
+    console.log('Expression Attribute Names:', params.ExpressionAttributeNames);
+    console.log('Expression Attribute Values:', params.ExpressionAttributeValues);
 
     const data = await ddbDocClient.send(new ScanCommand(params));
     let items = data.Items || [];
 
-    // Sort by relevance (ascending) and date_publish (descending)
+    // Sort items by date_publish in descending order
     items.sort((a, b) => {
-      const relevanceDiff = parseInt(a.relevance || '0', 10) - parseInt(b.relevance || '0', 10);
-      if (relevanceDiff !== 0) return relevanceDiff;
-      return new Date(b.date_publish).getTime() - new Date(a.date_publish).getTime();
+      const dateA = new Date(a.date_publish || 0);
+      const dateB = new Date(b.date_publish || 0);
+      return dateB.getTime() - dateA.getTime(); // Most recent first
     });
 
-    // Apply the limit
-    const limitedItems = limit > 0 ? items.slice(0, limit) : items;
+    // Apply additional filtering based on date range inclusively
+    items = items.filter(item => {
+      const itemDate = new Date(item.date_publish || 0);
+      return (
+        (!startDateFormatted || itemDate >= new Date(format(startOfDay(new Date(startDateFormatted)), "yyyy-MM-dd' 'HH:mm:ss"))) &&
+        (!endDateFormatted || itemDate <= new Date(format(endOfDay(new Date(endDateFormatted)), "yyyy-MM-dd' 'HH:mm:ss")))
+      );
+    });
 
-    console.log('Filtered items:', limitedItems);
+    const limitedItems = limit > 0 ? items.slice(0, limit) : items;
 
     return NextResponse.json(limitedItems);
   } catch (error) {
-    // TypeScript requires you to assert the error type
     if (error instanceof Error) {
       console.error('Error fetching filtered news:', error.message);
       return NextResponse.json({ message: 'Internal Server Error', error: error.message }, { status: 500 });
