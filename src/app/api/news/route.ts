@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   const sentiment = searchParams.get('sentiment') || '';
   const startDate = searchParams.get('startDate') || '';
   const endDate = searchParams.get('endDate') || '';
-  const limit = parseInt(searchParams.get('limit') || '10', 10);
+  const limit = parseInt(searchParams.get('limit') || '20', 10);
 
   // Function to format date to ISO format "yyyy-MM-dd'T'HH:mm:ss"
   function formatDateToDBFormat(date: string) {
@@ -95,12 +95,19 @@ export async function GET(req: NextRequest) {
       params.ExpressionAttributeValues = expressionAttributeValues;
     }
 
-    console.log('Filter Expression:', params.FilterExpression);
-    console.log('Expression Attribute Names:', params.ExpressionAttributeNames);
-    console.log('Expression Attribute Values:', params.ExpressionAttributeValues);
+    let items: any[] = [];
+    let lastEvaluatedKey: any = undefined;
 
-    const data = await ddbDocClient.send(new ScanCommand(params));
-    let items = data.Items || [];
+    do {
+      const scanParams: any = { ...params };
+      if (lastEvaluatedKey) {
+        scanParams.ExclusiveStartKey = lastEvaluatedKey;
+      }
+
+      const data = await ddbDocClient.send(new ScanCommand(scanParams));
+      items = items.concat(data.Items || []);
+      lastEvaluatedKey = data.LastEvaluatedKey;
+    } while (lastEvaluatedKey);
 
     // Sort items by date_publish in descending order
     items.sort((a, b) => {
