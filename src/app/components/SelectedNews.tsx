@@ -7,6 +7,17 @@ import SelectedArticle from './SelectedArticle';
 const SelectedNews = () => {
   const [selectedArticles, setSelectedArticles] = useState<news[]>([]);
 
+  // Function to check if an article is from today
+  const isArticleFromToday = (dateString: string) => {
+    const articleDate = new Date(dateString);
+    const today = new Date();
+    return (
+      articleDate.getFullYear() === today.getFullYear() &&
+      articleDate.getMonth() === today.getMonth() &&
+      articleDate.getDate() === today.getDate()
+    );
+  };
+
   const fetchAllNews = async () => {
     try {
       // Fetch all news with no limit
@@ -16,9 +27,22 @@ const SelectedNews = () => {
       }
       const data: news[] = await response.json();
       console.log('Fetched all news:', data); // Debug line
-      // Sort articles by relevance before setting state
-      const sortedData = data.sort((a, b) => (parseInt(a.relevance) || 0) - (parseInt(b.relevance) || 0));
-      setSelectedArticles(sortedData);
+
+      // Filter news from today
+      const todayNews = data.filter(article => isArticleFromToday(article.date_publish));
+
+      // Sort articles by relevance (ascending) and date (most recent on top)
+      const sortedData = todayNews.sort((a, b) => {
+        const relevanceComparison = (parseInt(a.relevance) || 0) - (parseInt(b.relevance) || 0);
+        if (relevanceComparison !== 0) return relevanceComparison;
+
+        // If relevance is the same, sort by date (most recent first)
+        return new Date(b.date_publish).getTime() - new Date(a.date_publish).getTime();
+      });
+
+      // Limit to top 10 articles
+      const limitedData = sortedData.slice(0, 10);
+      setSelectedArticles(limitedData);
     } catch (error) {
       console.error('Fetch error:', error);
     }
@@ -31,10 +55,19 @@ const SelectedNews = () => {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const article = JSON.parse(e.dataTransfer.getData('article')) as news;
-    // Add new article and sort by relevance
+    // Add new article and sort by relevance (ascending order) and date (most recent first)
     setSelectedArticles(prev => {
+      // Add new article
       const updatedArticles = [...prev, article];
-      return updatedArticles.sort((a, b) => (parseInt(a.relevance) || 0) - (parseInt(b.relevance) || 0));
+      // Sort and limit to top 10
+      const sortedArticles = updatedArticles.sort((a, b) => {
+        const relevanceComparison = (parseInt(a.relevance) || 0) - (parseInt(b.relevance) || 0);
+        if (relevanceComparison !== 0) return relevanceComparison;
+
+        // If relevance is the same, sort by date (most recent first)
+        return new Date(b.date_publish).getTime() - new Date(a.date_publish).getTime();
+      });
+      return sortedArticles.slice(0, 10);
     });
   };
 
