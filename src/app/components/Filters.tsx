@@ -23,7 +23,7 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
 
     const formatDateTime = (dateTime: string) => {
       if (!dateTime) return '';
-      const [date, time] = dateTime.split(' ');
+      const [date, time] = dateTime.split('T');
       return `${date} ${time}:00`;
     };
 

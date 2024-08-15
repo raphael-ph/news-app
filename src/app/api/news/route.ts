@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   const sentiment = searchParams.get('sentiment') || '';
   const startDate = searchParams.get('startDate') || '';
   const endDate = searchParams.get('endDate') || '';
-  const limit = parseInt(searchParams.get('limit') || '10', 10);
+  const limit = parseInt(searchParams.get('limit') || '20', 10);
 
   // Function to format date to ISO format "yyyy-MM-dd'T'HH:mm:ss"
   function formatDateToDBFormat(date: string) {
