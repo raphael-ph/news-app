@@ -7,9 +7,9 @@ import { ptBR } from 'date-fns/locale';
 const client = new DynamoDBClient({
   region: 'us-east-1',
   credentials: {
-    accessKeyId: process.env.ACCESS_KEY_ID!,
-    secretAccessKey: process.env.SECRET_ACCESS_KEY!,
-    sessionToken: process.env.SESSION_TOKEN,
+    accessKeyId: `ASIA2UC3E42NFLUCXUZ7`,
+    secretAccessKey: `nLrvuSVyQHkm7SzIRzCn5YJYp6GPdUyy78aT5Gc2`,
+    sessionToken: `IQoJb3JpZ2luX2VjEN3//////////wEaCWV1LXdlc3QtMiJHMEUCIGWaLvwy8KN7zOPbAinz8FrWx1paz3GB6MR1i8eBrP1HAiEA1BkMilTul/Dg0LgxIo6UB5TCNLOjMbRqg6PLhkogxcUq/wII1v//////////ARAAGgw3MzAzMzU2MDIzMzAiDG058HrS3bvS+lLPGSrTAi9RJnhMmpapkWnHC0KVb1LWvi7IrbhdAkr96o0o4mZRD71XApnVHrQSlfHuuh2wSPgKeztYyE+PFumIbQSedIuDBF3arkBxieFVSw9YJaONPRLqxl/tn7SDucJNgnVB258WPOO1HTP8s39cgMwq8ERoNcEBfKxFw0Tr8M+/F/9AeQ73kcgvHzUV2gQn4wjnc1zJ85Bo8Cu0g2KbfyCP5YHP6xtKVliUx8/pJjXJ2DJyqAvociRJv9xAbYz1Hh9jOszU0e6wsg+9dAiTCLap3HcQqY4uOa9EpibwoJBLZ7e/blXYRpHCbyCrZRmJbaclgjUtQ8X/hV8sIVO5jOdbfaiXilHUYSw9VPB1mk/RQSNM91E73EcejJzk6J/IMNFCpzhvmGNirpnaH4X5nOR9xlpjQQaZm5XDeu15O6X47k11BqnlqMFEqn86EITS6xcjrDs5STDz+Pe1BjqnAaLOvuWGOa9ZvLrtikVtFUh6FFwUrzpeX2cZxKkm7voATaW2TspzNWF84femN1CVWgAb3Gmbc6gKT4guZz0eGadsQjlVYkwn68Wr5UmMsv3CAs64fn2stmeXMtcFKXppmJtv4wVTfpsvqTIctH2aZZEaacwn3xZsXMr4n2F5dLQ0jpSlmNnRcF8Q/SQIej9Q0aA8TScrZZcvjGIiVeZsLoejzZLbbyHj`,
   },
 });
 

@@ -16,7 +16,7 @@ const Filters = ({ onFilterChange }: { onFilterChange: (relevance: string, senti
     // Convert datetime-local value to the required format
     const formatDateTime = (dateTime: string) => {
       if (!dateTime) return '';
-      const [date, time] = dateTime.split(' ');
+      const [date, time] = dateTime.split('T');
       return `${date} ${time}:00`;
     };
 
