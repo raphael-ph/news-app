@@ -1,19 +1,26 @@
-// components/Filters.tsx
 "use client";
 
 import { useState } from 'react';
 
-const Filters = ({ onFilterChange }: { onFilterChange: (relevance: string, sentiment: string, startDate: string, endDate: string) => void }) => {
+interface FiltersProps {
+  onFilterChange: (
+    relevance: string,
+    sentiment: string,
+    startDate: string,
+    endDate: string
+  ) => void;
+}
+
+const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
   const [relevance, setRelevance] = useState<string>('');
-  const [sentiment, setSentiment] = useState<string>('');
+  const [sentiment, setSentiment] = useState<string>(''); 
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
   const handleFilterChange = () => {
     const filteredRelevance = relevance || 'ALL';
-    const filteredSentiment = sentiment ? sentiment.toUpperCase() : 'ALL';
+    const filteredSentiment = sentiment || 'ALL'; 
 
-    // Convert datetime-local value to the required format
     const formatDateTime = (dateTime: string) => {
       if (!dateTime) return '';
       const [date, time] = dateTime.split('T');
@@ -23,7 +30,12 @@ const Filters = ({ onFilterChange }: { onFilterChange: (relevance: string, senti
     const formattedStartDate = formatDateTime(startDate);
     const formattedEndDate = formatDateTime(endDate);
 
-    console.log('Filtered values:', { filteredRelevance, filteredSentiment, formattedStartDate, formattedEndDate }); // Debugging line
+    console.log('Filtered values:', {
+      filteredRelevance,
+      filteredSentiment,
+      formattedStartDate,
+      formattedEndDate,
+    });
 
     onFilterChange(filteredRelevance, filteredSentiment, formattedStartDate, formattedEndDate);
   };
@@ -43,6 +55,7 @@ const Filters = ({ onFilterChange }: { onFilterChange: (relevance: string, senti
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="4">4</option>
+            <option value="5">5</option>
           </select>
         </div>
         <div>
@@ -53,9 +66,9 @@ const Filters = ({ onFilterChange }: { onFilterChange: (relevance: string, senti
             className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
           >
             <option value="">All</option>
-            <option value="Positive">Positive</option>
-            <option value="Neutral">Neutral</option>
-            <option value="Negative">Negative</option>
+            <option value="POSITIVE">Positive</option>
+            <option value="NEUTRAL">Neutral</option>
+            <option value="NEGATIVE">Negative</option>
           </select>
         </div>
       </div>

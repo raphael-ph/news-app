@@ -16,7 +16,9 @@ const SelectedNews = () => {
       }
       const data: news[] = await response.json();
       console.log('Fetched all news:', data); // Debug line
-      setSelectedArticles(data);
+      // Sort articles by relevance before setting state
+      const sortedData = data.sort((a, b) => (parseInt(a.relevance) || 0) - (parseInt(b.relevance) || 0));
+      setSelectedArticles(sortedData);
     } catch (error) {
       console.error('Fetch error:', error);
     }
@@ -29,7 +31,11 @@ const SelectedNews = () => {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const article = JSON.parse(e.dataTransfer.getData('article')) as news;
-    setSelectedArticles(prev => [...prev, article]);
+    // Add new article and sort by relevance
+    setSelectedArticles(prev => {
+      const updatedArticles = [...prev, article];
+      return updatedArticles.sort((a, b) => (parseInt(a.relevance) || 0) - (parseInt(b.relevance) || 0));
+    });
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
