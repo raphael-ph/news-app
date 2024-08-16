@@ -34,7 +34,7 @@ const Article = ({ data }: { data: news }) => {
       </Link>
       <div className='flex flex-wrap space-x-2 my-3'>
         <Tag data={data?.source_domain} />
-        <Tag data={new Date(data?.date_publish).toDateString()} />
+        <Tag data={new Date(data?.date_modify).toDateString()} />
         <Tag data={data?.relevance} />
         <Tag data={data?.sentiment} />
       </div>

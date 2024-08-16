@@ -29,7 +29,7 @@ const SelectedNews = () => {
       console.log('Fetched all news:', data); // Debug line
 
       // Filter news from today
-      const todayNews = data.filter(article => isArticleFromToday(article.date_publish));
+      const todayNews = data.filter(article => isArticleFromToday(article.date_modify));
 
       // Sort articles by relevance (ascending) and date (most recent on top)
       const sortedData = todayNews.sort((a, b) => {
@@ -37,7 +37,7 @@ const SelectedNews = () => {
         if (relevanceComparison !== 0) return relevanceComparison;
 
         // If relevance is the same, sort by date (most recent first)
-        return new Date(b.date_publish).getTime() - new Date(a.date_publish).getTime();
+        return new Date(b.date_modify).getTime() - new Date(a.date_modify).getTime();
       });
 
       // Limit to top 10 articles
@@ -65,7 +65,7 @@ const SelectedNews = () => {
         if (relevanceComparison !== 0) return relevanceComparison;
 
         // If relevance is the same, sort by date (most recent first)
-        return new Date(b.date_publish).getTime() - new Date(a.date_publish).getTime();
+        return new Date(b.date_modify).getTime() - new Date(a.date_modify).getTime();
       });
       return sortedArticles.slice(0, 10);
     });

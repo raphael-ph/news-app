@@ -24,11 +24,9 @@ export default function RootLayout({
       <body className={tripspace.className}>
         <main className="px-2 md:px-20">
           <Header />
-
-          <section className="flex justify-between">
-            <div className="w-[700px]">
+          <section className="flex flex-col md:flex-row justify-between">
+            <div className="flex-grow md:w-[700px]">
               {children}
-              {/* RandomNews */}
             </div>
             <SelectedNews />
           </section>

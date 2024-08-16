@@ -9,7 +9,7 @@ const client = new DynamoDBClient({
   credentials: {
     accessKeyId: process.env.ACCESS_KEY_ID!,
     secretAccessKey: process.env.SECRET_ACCESS_KEY!,
-    sessionToken: process.env.SESSION_TOKEN,
+    sessionToken:process.env.SESSION_TOKEN,
   },
 });
 
@@ -78,15 +78,15 @@ export async function GET(req: NextRequest) {
     }
 
     if (startDateFormatted) {
-      filterExpressions.push("#date_publish >= :startDate");
+      filterExpressions.push("#date_modify >= :startDate");
       expressionAttributeValues[":startDate"] = format(startOfDay(new Date(startDateFormatted)), "yyyy-MM-dd' 'HH:mm:ss");
-      expressionAttributeNames["#date_publish"] = "date_publish";
+      expressionAttributeNames["#date_modify"] = "date_modify";
     }
 
     if (endDateFormatted) {
-      filterExpressions.push("#date_publish <= :endDate");
+      filterExpressions.push("#date_modify <= :endDate");
       expressionAttributeValues[":endDate"] = format(endOfDay(new Date(endDateFormatted)), "yyyy-MM-dd' 'HH:mm:ss");
-      expressionAttributeNames["#date_publish"] = "date_publish";
+      expressionAttributeNames["#date_modify"] = "date_modify";
     }
 
     if (filterExpressions.length > 0) {
@@ -109,16 +109,16 @@ export async function GET(req: NextRequest) {
       lastEvaluatedKey = data.LastEvaluatedKey;
     } while (lastEvaluatedKey);
 
-    // Sort items by date_publish in descending order
+    // Sort items by date_modify in descending order
     items.sort((a, b) => {
-      const dateA = new Date(a.date_publish || 0);
-      const dateB = new Date(b.date_publish || 0);
+      const dateA = new Date(a.date_modify || 0);
+      const dateB = new Date(b.date_modify || 0);
       return dateB.getTime() - dateA.getTime(); // Most recent first
     });
 
     // Apply additional filtering based on date range inclusively
     items = items.filter(item => {
-      const itemDate = new Date(item.date_publish || 0);
+      const itemDate = new Date(item.date_modify || 0);
       return (
         (!startDateFormatted || itemDate >= new Date(format(startOfDay(new Date(startDateFormatted)), "yyyy-MM-dd' 'HH:mm:ss"))) &&
         (!endDateFormatted || itemDate <= new Date(format(endOfDay(new Date(endDateFormatted)), "yyyy-MM-dd' 'HH:mm:ss")))

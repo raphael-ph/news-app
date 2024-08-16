@@ -29,7 +29,11 @@ const TopHeadlines = () => {
       }
 
       const response = await fetch(`/api/news?${queryParams.toString()}`);
-      const news = await response.json();
+      let news = await response.json();
+
+      // Filter out news with relevance 5 or 6
+      news = news.filter((article: news) => article.relevance !== '5' && article.relevance !== '6');
+
       setFilteredNews(news);
     } catch (error) {
       console.error('Error fetching news:', error);
@@ -51,7 +55,7 @@ const TopHeadlines = () => {
   return (
     <div>
       <Filters onFilterChange={handleFilterChange} />
-      <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {filteredNews.map((article) => (
           <DraggableArticle key={article.session_id} article={article} />
         ))}

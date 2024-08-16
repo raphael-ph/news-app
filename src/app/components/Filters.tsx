@@ -21,14 +21,13 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
     const filteredRelevance = relevance || 'ALL';
     const filteredSentiment = sentiment || 'ALL'; 
 
-    const formatDateTime = (dateTime: string) => {
-      if (!dateTime) return '';
-      const [date, time] = dateTime.split('T');
-      return `${date} ${time}:00`;
+    const formatDate = (date: string, time: string) => {
+      if (!date) return '';
+      return `${date} ${time}`;
     };
 
-    const formattedStartDate = formatDateTime(startDate);
-    const formattedEndDate = formatDateTime(endDate);
+    const formattedStartDate = formatDate(startDate, '00:00:00');
+    const formattedEndDate = formatDate(endDate, '23:59:59');
 
     console.log('Filtered values:', {
       filteredRelevance,
@@ -59,7 +58,7 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Sentiment</label>
+          {/* <label className="block text-sm font-medium text-gray-700">Sentiment</label>
           <select
             value={sentiment}
             onChange={(e) => setSentiment(e.target.value)}
@@ -69,14 +68,14 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
             <option value="POSITIVE">Positive</option>
             <option value="NEUTRAL">Neutral</option>
             <option value="NEGATIVE">Negative</option>
-          </select>
+          </select> */}
         </div>
       </div>
       <div className="flex space-x-4">
         <div>
           <label className="block text-sm font-medium text-gray-700">Start Date</label>
           <input
-            type="datetime-local"
+            type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
@@ -85,7 +84,7 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700">End Date</label>
           <input
-            type="datetime-local"
+            type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
